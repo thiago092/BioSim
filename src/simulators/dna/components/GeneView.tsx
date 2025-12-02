@@ -29,7 +29,7 @@ const GENE_STRUCTURE: GeneRegion[] = [
 export function GeneView() {
     const geneRef = useRef<Group>(null)
     const [hoveredRegion, setHoveredRegion] = useState<GeneRegion | null>(null)
-    const [showDetails, setShowDetails] = useState(true)
+    const [showDetails] = useState(true)
 
     useFrame((state) => {
         if (geneRef.current) {
@@ -95,7 +95,7 @@ export function GeneView() {
             </group>
 
             {/* Regiões do gene */}
-            {GENE_STRUCTURE.map((region, i) => (
+            {GENE_STRUCTURE.map((region) => (
                 <group key={region.name}>
                     {/* Região principal */}
                     <mesh

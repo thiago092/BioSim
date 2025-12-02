@@ -16,7 +16,7 @@ export function SpindleFibers({ startPos, endPos, opacity = 0.5, tension = 0.5, 
     const time = useRef(0)
 
     // Animação das fibras pulsando
-    useFrame((state, delta) => {
+    useFrame((_, delta) => {
         time.current += delta
     })
 

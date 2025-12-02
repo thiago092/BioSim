@@ -1,5 +1,5 @@
 import type { ZoomLevel } from '../data/educational-content'
-import { EDUCATIONAL_CONTENT, BASE_COLORS } from '../data/educational-content'
+import { EDUCATIONAL_CONTENT } from '../data/educational-content'
 import { X } from 'lucide-react'
 
 interface EducationalPanelProps {

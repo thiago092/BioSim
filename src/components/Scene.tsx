@@ -53,21 +53,15 @@ function AmbientParticles() {
             <bufferGeometry>
                 <bufferAttribute
                     attach="attributes-position"
-                    count={particleCount}
-                    array={positions}
-                    itemSize={3}
+                    args={[positions, 3]}
                 />
                 <bufferAttribute
                     attach="attributes-color"
-                    count={particleCount}
-                    array={colors}
-                    itemSize={3}
+                    args={[colors, 3]}
                 />
                 <bufferAttribute
                     attach="attributes-size"
-                    count={particleCount}
-                    array={sizes}
-                    itemSize={1}
+                    args={[sizes, 1]}
                 />
             </bufferGeometry>
             <pointsMaterial
@@ -133,7 +127,7 @@ function FloatingMolecules() {
     )
 }
 
-export function Scene({ mode, isPlaying, onCellClick }: SceneProps) {
+export function Scene({ phase, mode, isPlaying }: SceneProps) {
     return (
         <group>
             {/* Iluminação Realista */}
@@ -172,7 +166,7 @@ export function Scene({ mode, isPlaying, onCellClick }: SceneProps) {
             <FloatingMolecules />
 
             {/* População de Células Inteligentes */}
-            <CellPopulation mode={mode} isPlaying={isPlaying} />
+            <CellPopulation mode={mode} isPlaying={isPlaying} phase={phase} />
 
             {/* Partículas de poeira celular */}
             <Float speed={1} rotationIntensity={1} floatIntensity={1}>
