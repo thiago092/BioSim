@@ -8,7 +8,6 @@ import { Chromosome } from './Chromosome'
 import { Organelle } from './Organelle'
 import { CleavageFurrow } from './CleavageFurrow'
 import { DNAReplication } from './DNAReplication'
-import { CellTooltip } from './CellTooltip'
 import { Centriole } from './Centriole'
 import { SpindleFibers } from './SpindleFibers'
 import { Chromatin } from './Chromatin'
@@ -319,14 +318,30 @@ export function SmartCell({ id, initialPosition, generation, mode, isPlaying, gl
             </Float>
 
             {isHovered && (
-                <Html position={[0, 0, 0]} zIndexRange={[0, 50]} style={{ pointerEvents: 'none' }}>
-                    <div style={{ width: '300px', transform: 'translate3d(-50%, -100%, 0)' }}>
-                        <CellTooltip
-                            phase={phase}
-                            position={[0, 0]}
-                            cellIndex={parseInt(id)}
-                            elapsedTime={timer}
-                        />
+                <Html 
+                    position={[0, 1.8, 0]} 
+                    center
+                    style={{ 
+                        pointerEvents: 'none',
+                        userSelect: 'none',
+                        whiteSpace: 'nowrap'
+                    }}
+                    zIndexRange={[0, 0]}
+                    occlude={false}
+                    sprite
+                >
+                    <div style={{ 
+                        background: 'rgba(0,0,0,0.85)',
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(157, 78, 221, 0.5)',
+                        fontSize: '12px',
+                        color: 'white',
+                        textAlign: 'center',
+                        minWidth: '120px'
+                    }}>
+                        <div style={{ fontWeight: 'bold', color: '#c77dff' }}>{phase}</div>
+                        <div style={{ fontSize: '10px', opacity: 0.7 }}>Célula #{id}</div>
                     </div>
                 </Html>
             )}
