@@ -38,24 +38,26 @@ export function InfoPanel({ mode: _ }: InfoPanelProps) {
                 onClick={() => setIsOpen(true)}
                 style={{
                     position: 'absolute',
-                    bottom: 200,
-                    right: 30,
+                    top: '50%',
+                    right: 20,
+                    transform: 'translateY(-50%)',
                     background: 'rgba(68, 136, 255, 0.2)',
                     backdropFilter: 'blur(10px)',
                     border: '1px solid rgba(68, 136, 255, 0.3)',
                     borderRadius: '50%',
-                    width: '56px',
-                    height: '56px',
+                    width: '48px',
+                    height: '48px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: 'white',
                     cursor: 'pointer',
                     transition: 'all 0.3s',
+                    zIndex: 15
                 }}
                 title="Informações e Glossário"
             >
-                <HelpCircle size={28} />
+                <HelpCircle size={24} />
             </button>
         )
     }
@@ -63,16 +65,18 @@ export function InfoPanel({ mode: _ }: InfoPanelProps) {
     return (
         <div style={{
             position: 'absolute',
-            bottom: 200,
-            right: 30,
-            width: '350px',
-            maxHeight: '500px',
+            top: '50%',
+            right: 20,
+            transform: 'translateY(-50%)',
+            width: '320px',
+            maxHeight: '70vh',
             background: 'rgba(20, 20, 30, 0.95)',
             backdropFilter: 'blur(15px)',
             border: '1px solid rgba(255, 255, 255, 0.15)',
-            borderRadius: '16px',
+            borderRadius: '14px',
             overflow: 'hidden',
             boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)',
+            zIndex: 25
         }}>
             {/* Header */}
             <div style={{
