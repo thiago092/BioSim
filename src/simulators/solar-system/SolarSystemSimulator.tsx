@@ -261,7 +261,7 @@ function Sun() {
 // Componente Lua
 function Moon({ data, parentRef, isPlaying, speedMultiplier }: {
     data: { name: string; radius: number; distance: number; speed: number; color: string }
-    parentRef: React.RefObject<THREE.Group>
+    parentRef: React.RefObject<THREE.Group | null>
     isPlaying: boolean
     speedMultiplier: number
 }) {
