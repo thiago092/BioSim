@@ -1,0 +1,293 @@
+import type { Mission, Achievement, QuizQuestion } from '../types/gamification'
+
+// ==================== MISSÕES NÍVEL 1 ====================
+
+export const LEVEL_1_MISSIONS: Mission[] = [
+    {
+        id: 'mission-1-1',
+        level: 1,
+        title: 'Primeira Geração',
+        description: 'Gere seus primeiros descendentes e observe os resultados de um cruzamento heterozigoto.',
+        difficulty: 'easy',
+        objectives: [
+            {
+                id: 'obj-1-1-1',
+                description: 'Configure um cruzamento Vv x Vv',
+                type: 'configure',
+                targetValue: 'Vv-Vv',
+                completed: false,
+            },
+            {
+                id: 'obj-1-1-2',
+                description: 'Gere pelo menos 10 descendentes',
+                type: 'generate',
+                targetValue: 10,
+                completed: false,
+            },
+            {
+                id: 'obj-1-1-3',
+                description: 'Observe a proporção de fenótipos',
+                type: 'identify',
+                completed: false,
+            },
+        ],
+        rewards: {
+            points: 100,
+            xp: 50,
+            achievement: 'first-generation',
+            unlocks: ['mission-1-2'],
+        },
+    },
+    {
+        id: 'mission-1-2',
+        level: 1,
+        title: 'Entendendo Dominância',
+        description: 'Compare diferentes cruzamentos para entender como alelos dominantes e recessivos funcionam.',
+        difficulty: 'easy',
+        unlockRequirement: 'mission-1-1',
+        objectives: [
+            {
+                id: 'obj-1-2-1',
+                description: 'Realize um cruzamento VV x VV',
+                type: 'configure',
+                targetValue: 'VV-VV',
+                completed: false,
+            },
+            {
+                id: 'obj-1-2-2',
+                description: 'Realize um cruzamento vv x vv',
+                type: 'configure',
+                targetValue: 'vv-vv',
+                completed: false,
+            },
+            {
+                id: 'obj-1-2-3',
+                description: 'Responda o quiz sobre dominância',
+                type: 'quiz',
+                targetValue: 'quiz-dominance',
+                completed: false,
+            },
+        ],
+        rewards: {
+            points: 150,
+            xp: 75,
+            achievement: 'dominance-master',
+            unlocks: ['mission-1-3'],
+        },
+    },
+    {
+        id: 'mission-1-3',
+        level: 1,
+        title: 'Proporção Mendeliana',
+        description: 'Atinja a famosa proporção 3:1 de Mendel com um número suficiente de descendentes.',
+        difficulty: 'medium',
+        unlockRequirement: 'mission-1-2',
+        objectives: [
+            {
+                id: 'obj-1-3-1',
+                description: 'Gere 50 ou mais descendentes',
+                type: 'generate',
+                targetValue: 50,
+                completed: false,
+            },
+            {
+                id: 'obj-1-3-2',
+                description: 'Atinja proporção 3:1 (±10%)',
+                type: 'ratio',
+                targetValue: '3:1',
+                completed: false,
+            },
+        ],
+        rewards: {
+            points: 200,
+            xp: 100,
+            achievement: 'mendelian',
+            unlocks: ['level-2'],
+        },
+    },
+]
+
+// ==================== CONQUISTAS ====================
+
+export const ACHIEVEMENTS: Achievement[] = [
+    {
+        id: 'first-generation',
+        title: 'Primeiro Passo',
+        description: 'Gere seus primeiros descendentes',
+        icon: '🧬',
+        points: 10,
+        unlocked: false,
+        requirement: {
+            type: 'action',
+            condition: 'totalOffspring > 0',
+        },
+    },
+    {
+        id: 'mendelian',
+        title: 'Mendeliano',
+        description: 'Atinja a proporção 3:1 pela primeira vez',
+        icon: '📊',
+        points: 50,
+        unlocked: false,
+        requirement: {
+            type: 'stat',
+            condition: 'mendelianRatiosAchieved >= 1',
+        },
+    },
+    {
+        id: 'dominance-master',
+        title: 'Mestre da Dominância',
+        description: 'Complete a missão "Entendendo Dominância"',
+        icon: '🔹',
+        points: 75,
+        unlocked: false,
+        requirement: {
+            type: 'mission',
+            condition: 'completedMissions.includes("mission-1-2")',
+        },
+    },
+    {
+        id: 'explorer',
+        title: 'Explorador Genético',
+        description: 'Teste todas as combinações de alelos (VV, Vv, vv)',
+        icon: '🔬',
+        points: 75,
+        unlocked: false,
+        requirement: {
+            type: 'combo',
+            condition: 'testedAllCombinations',
+        },
+    },
+    {
+        id: 'crossover-master',
+        title: 'Mestre do Crossing-Over',
+        description: 'Use recombinação em 10 experimentos',
+        icon: '🔄',
+        points: 100,
+        unlocked: false,
+        requirement: {
+            type: 'stat',
+            condition: 'crossoversUsed >= 10',
+            value: 10,
+        },
+    },
+    {
+        id: 'mutation-hunter',
+        title: 'Caçador de Mutações',
+        description: 'Identifique 5 mutações diferentes',
+        icon: '⚡',
+        points: 80,
+        unlocked: false,
+        requirement: {
+            type: 'stat',
+            condition: 'mutationsFound >= 5',
+            value: 5,
+        },
+    },
+    {
+        id: 'statistician',
+        title: 'Estatístico',
+        description: 'Gere 100+ descendentes em um único experimento',
+        icon: '📈',
+        points: 120,
+        unlocked: false,
+        requirement: {
+            type: 'action',
+            condition: 'singleExperimentOffspring >= 100',
+            value: 100,
+        },
+    },
+    {
+        id: 'perfectionist',
+        title: 'Perfeccionista',
+        description: 'Atinja proporção 3:1 exata (75.0% / 25.0%)',
+        icon: '⭐',
+        points: 200,
+        unlocked: false,
+        requirement: {
+            type: 'action',
+            condition: 'exactRatio',
+        },
+    },
+]
+
+// ==================== QUIZ ====================
+
+export const QUIZ_QUESTIONS: QuizQuestion[] = [
+    {
+        id: 'quiz-dominance',
+        question: 'Qual é o fenótipo de um indivíduo com genótipo Vv?',
+        type: 'multiple-choice',
+        options: [
+            'Verde (dominante)',
+            'Amarelo (recessivo)',
+            'Misto (verde e amarelo)',
+            'Depende do ambiente',
+        ],
+        correctAnswer: 0,
+        explanation: 'O alelo V (verde) é dominante sobre v (amarelo). Portanto, Vv expressa o fenótipo verde.',
+        difficulty: 'easy',
+        points: 20,
+        relatedConcept: 'dominant',
+    },
+    {
+        id: 'quiz-ratio',
+        question: 'Em um cruzamento Vv x Vv, qual é a proporção fenotípica esperada?',
+        type: 'multiple-choice',
+        options: ['1:1', '2:1', '3:1', '4:0'],
+        correctAnswer: 2,
+        explanation: 'VV (25%) + Vv (50%) = 75% verde, vv (25%) = 25% amarelo. Proporção 3:1.',
+        difficulty: 'medium',
+        points: 30,
+        relatedConcept: 'ratio',
+    },
+    {
+        id: 'quiz-genotype',
+        question: 'Verdadeiro ou Falso: Genótipo e fenótipo são sempre iguais.',
+        type: 'true-false',
+        options: ['Verdadeiro', 'Falso'],
+        correctAnswer: 1,
+        explanation: 'Falso! VV e Vv têm genótipos diferentes mas o mesmo fenótipo (verde).',
+        difficulty: 'easy',
+        points: 15,
+        relatedConcept: 'genotype',
+    },
+    {
+        id: 'quiz-homozygous',
+        question: 'Qual cruzamento produz 100% de descendentes verdes?',
+        type: 'multiple-choice',
+        options: ['Vv x Vv', 'VV x VV', 'vv x vv', 'Vv x vv'],
+        correctAnswer: 1,
+        explanation: 'VV x VV produz apenas VV (100% verde). Todos os outros produzem variação.',
+        difficulty: 'medium',
+        points: 25,
+        relatedConcept: 'homozygous',
+    },
+    {
+        id: 'quiz-prediction',
+        question: 'Se você cruzar VV x vv, qual será o genótipo de TODOS os descendentes?',
+        type: 'multiple-choice',
+        options: ['VV', 'Vv', 'vv', 'Variado'],
+        correctAnswer: 1,
+        explanation: 'VV só pode doar V, vv só pode doar v. Todos os filhos serão Vv (heterozigotos).',
+        difficulty: 'hard',
+        points: 35,
+        relatedConcept: 'heterozygous',
+    },
+    {
+        id: 'quiz-crossover',
+        question: 'O que o crossing-over aumenta em uma população?',
+        type: 'multiple-choice',
+        options: [
+            'Número de descendentes',
+            'Variabilidade genética',
+            'Taxa de mutação',
+            'Dominância dos alelos',
+        ],
+        correctAnswer: 1,
+        explanation: 'Crossing-over recombina genes, criando novas combinações e aumentando a variabilidade.',
+        difficulty: 'medium',
+        points: 30,
+        relatedConcept: 'crossover',
+    },
+]
