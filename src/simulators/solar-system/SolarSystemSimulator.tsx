@@ -1,8 +1,8 @@
 import { Canvas, useFrame } from '@react-three/fiber'
-import { OrbitControls, Stars, Html, useTexture } from '@react-three/drei'
+import { OrbitControls, Stars, Html } from '@react-three/drei'
 import { Suspense, useState, useRef, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Home, Play, Pause, RotateCcw, Info, X, ZoomIn, ZoomOut } from 'lucide-react'
+import { Home, Play, Pause, RotateCcw, Info, X } from 'lucide-react'
 import * as THREE from 'three'
 
 // Dados dos planetas (escala ajustada para visualização)
