@@ -47,12 +47,12 @@ export function HomePage() {
                 zIndex: 1,
                 maxWidth: '1400px',
                 margin: '0 auto',
-                padding: '80px 40px',
+                padding: '40px 20px',
             }}>
                 {/* Header */}
                 <header style={{
                     textAlign: 'center',
-                    marginBottom: '80px',
+                    marginBottom: '50px',
                     animation: 'fadeInDown 0.8s ease-out',
                 }}>
                     <div style={{
@@ -78,7 +78,7 @@ export function HomePage() {
 
                     <h1 style={{
                         margin: '0 0 24px 0',
-                        fontSize: '5rem',
+                        fontSize: 'clamp(2.5rem, 8vw, 5rem)',
                         fontWeight: '900',
                         background: 'linear-gradient(135deg, #fff 0%, #4488ff 100%)',
                         WebkitBackgroundClip: 'text',
@@ -118,7 +118,7 @@ export function HomePage() {
                 {/* Simulators Grid */}
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
                     gap: '32px',
                     animation: 'fadeInUp 0.8s ease-out 0.2s both',
                 }}>
@@ -165,7 +165,7 @@ export function HomePage() {
 
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(3, 1fr)',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
                         gap: '24px',
                     }}>
                         {/* Divisão Celular */}
