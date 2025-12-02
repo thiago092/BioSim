@@ -40,7 +40,7 @@ export function CellPopulation({ mode, isPlaying, phase, onCellClick }: CellPopu
     }, [])
 
     // Loop de Física: Verlet/Euler Integration para movimento orgânico suave
-    useFrame((state, delta) => {
+    useFrame((_, delta) => {
         const ids = Object.keys(cellRefs.current)
         const repulsionRadius = 3.2 // Raio de interação
         const repulsionStrength = 15.0 // Força de empurrão

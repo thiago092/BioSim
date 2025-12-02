@@ -10,7 +10,7 @@ interface CellProps {
     scale?: number
 }
 
-export function Cell({ phase, scale = 1 }: CellProps) {
+export function Cell({ phase }: CellProps) {
     const leftCell = useRef<THREE.Group>(null)
     const rightCell = useRef<THREE.Group>(null)
     const mainCell = useRef<THREE.Group>(null)

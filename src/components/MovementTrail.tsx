@@ -14,7 +14,7 @@ export function MovementTrail({ startPos, endPos, color = "#ff00ff", opacity = 0
     const lineRef = useRef<any>(null)
     const dashOffset = useRef(0)
 
-    useFrame((state, delta) => {
+    useFrame((_, delta) => {
         // Anima o dash offset para criar efeito de "marching ants"
         dashOffset.current += delta * 2
 

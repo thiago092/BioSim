@@ -16,7 +16,7 @@ export function CrossingOver({ phase }: CrossingOverProps) {
     const shouldShow = phase === 'Crossing-Over' || phase === 'Prófase-I'
     const isExchanging = phase === 'Crossing-Over'
 
-    useFrame((state, delta) => {
+    useFrame((_, delta) => {
         const targetScale = shouldShow ? 1 : 0
 
         if (group1.current) {

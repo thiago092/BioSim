@@ -67,7 +67,7 @@ const explanations: Record<number, { title: string; text: string; icon: string }
     },
 }
 
-export function GenerationExplanation({ generation, totalCells, mode = 'basic', onClose }: GenerationExplanationProps) {
+export function GenerationExplanation({ generation, totalCells, onClose }: GenerationExplanationProps) {
     const [isMinimized, setIsMinimized] = useState(false)
 
     // Calcula total se não for passado

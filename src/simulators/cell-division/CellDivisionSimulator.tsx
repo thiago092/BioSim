@@ -62,8 +62,7 @@ export function CellDivisionSimulator() {
     const modeInfo: Record<ModeLevel, { name: string; icon: typeof Microscope; color: string; desc: string }> = {
         basic: { name: 'Mitose Básica', icon: Microscope, color: '#4488ff', desc: 'Divisão celular simples' },
         intermediate: { name: 'Mitose Intermediária', icon: Layers, color: '#f59e0b', desc: 'Mais detalhes do ciclo' },
-        mitosis: { name: 'Mitose Completa', icon: Layers, color: '#22c55e', desc: 'Todas as subfases detalhadas' },
-        meiosis: { name: 'Meiose', icon: FlaskConical, color: '#f093fb', desc: 'Divisão reducional para gametas' },
+        advanced: { name: 'Meiose', icon: FlaskConical, color: '#f093fb', desc: 'Divisão reducional para gametas' },
     }
 
     const currentModeInfo = modeInfo[mode]

@@ -28,7 +28,7 @@ const facts = [
     '🧪 A mitose produz células idênticas, enquanto a meiose cria diversidade.',
 ]
 
-export function InfoPanel({ mode }: InfoPanelProps) {
+export function InfoPanel({ mode: _ }: InfoPanelProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [activeTab, setActiveTab] = useState<'glossary' | 'facts'>('glossary')
 
