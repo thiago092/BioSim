@@ -119,16 +119,15 @@ export function DNAExplorer() {
                 }
                 .dna-sim .top-section {
                     display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    gap: 0.5rem;
+                    justify-content: space-between;
+                    align-items: flex-start;
                     pointer-events: auto;
+                    width: 100%;
                 }
                 .dna-sim .header-row {
                     display: flex;
-                    justify-content: space-between;
-                    align-items: flex-start;
-                    width: 100%;
+                    align-items: center;
+                    gap: 0.5rem;
                 }
                 .dna-sim .left-header {
                     display: flex;
@@ -195,15 +194,20 @@ export function DNAExplorer() {
                     background: transparent;
                 }
                 .dna-sim .nav-levels {
+                    position: absolute;
+                    bottom: 5rem;
+                    left: 50%;
+                    transform: translateX(-50%);
                     display: flex;
                     gap: 0.3rem;
-                    background: rgba(0,0,0,0.5);
+                    background: rgba(0,0,0,0.7);
                     backdrop-filter: blur(10px);
-                    padding: 0.3rem;
+                    padding: 0.4rem;
                     border-radius: 0.5rem;
                     border: 1px solid rgba(255,255,255,0.1);
                     flex-wrap: wrap;
                     justify-content: center;
+                    pointer-events: auto;
                 }
                 .dna-sim .level-btn {
                     display: flex;
@@ -242,14 +246,14 @@ export function DNAExplorer() {
                 }
                 .dna-sim .bottom-bar {
                     position: absolute;
-                    bottom: 0.6rem;
-                    left: 0.6rem;
-                    right: 0.6rem;
+                    bottom: 0.5rem;
+                    left: 0.5rem;
+                    right: 0.5rem;
                     display: flex;
                     justify-content: space-between;
                     align-items: flex-end;
                     pointer-events: auto;
-                    gap: 0.5rem;
+                    gap: 0.4rem;
                     flex-wrap: wrap;
                 }
                 .dna-sim .prof-info {
@@ -406,63 +410,61 @@ export function DNAExplorer() {
             <div className="ui-overlay">
                 <div className="top-section">
                     <div className="header-row">
-                        <div className="left-header">
-                            <Link to="/" className="icon-btn"><Home size={14} /></Link>
-                            <div>
-                                <div className="title">🧬 DNA Explorer</div>
-                                <div className="subtitle">Prof. Anayram</div>
-                            </div>
-                        </div>
-                        <div className="mode-selector">
-                            <button
-                                onClick={() => setViewMode('structure')}
-                                className={`mode-btn ${viewMode === 'structure' ? 'active-structure' : ''}`}
-                            >
-                                <Dna size={14} />
-                                <span>Estrutura</span>
-                            </button>
-                            <button
-                                onClick={() => setViewMode('processes')}
-                                className={`mode-btn ${viewMode === 'processes' ? 'active-process' : ''}`}
-                            >
-                                <FlaskConical size={14} />
-                                <span>Processos</span>
-                            </button>
+                        <Link to="/" className="icon-btn"><Home size={14} /></Link>
+                        <div>
+                            <div className="title">🧬 DNA Explorer</div>
+                            <div className="subtitle">Prof. Anayram</div>
                         </div>
                     </div>
-
-                    {viewMode === 'structure' && (
-                        <div className="nav-levels">
-                            {structureViews.map((v, i) => (
-                                <button
-                                    key={v.level}
-                                    onClick={() => setZoomLevel(v.level)}
-                                    className={`level-btn ${zoomLevel === v.level ? 'active-s' : ''}`}
-                                >
-                                    {v.icon}
-                                    {v.label}
-                                    {i < structureViews.length - 1 && <span className="arrow">→</span>}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-
-                    {viewMode === 'processes' && (
-                        <div className="nav-levels">
-                            {processViews.map((v, i) => (
-                                <button
-                                    key={v.level}
-                                    onClick={() => setProcessLevel(v.level)}
-                                    className={`level-btn ${processLevel === v.level ? 'active-p' : ''}`}
-                                >
-                                    {v.icon}
-                                    {v.label}
-                                    {i < processViews.length - 1 && <span className="arrow">→</span>}
-                                </button>
-                            ))}
-                        </div>
-                    )}
+                    <div className="mode-selector">
+                        <button
+                            onClick={() => setViewMode('structure')}
+                            className={`mode-btn ${viewMode === 'structure' ? 'active-structure' : ''}`}
+                        >
+                            <Dna size={14} />
+                            <span>Estrutura</span>
+                        </button>
+                        <button
+                            onClick={() => setViewMode('processes')}
+                            className={`mode-btn ${viewMode === 'processes' ? 'active-process' : ''}`}
+                        >
+                            <FlaskConical size={14} />
+                            <span>Processos</span>
+                        </button>
+                    </div>
                 </div>
+
+                {viewMode === 'structure' && (
+                    <div className="nav-levels">
+                        {structureViews.map((v, i) => (
+                            <button
+                                key={v.level}
+                                onClick={() => setZoomLevel(v.level)}
+                                className={`level-btn ${zoomLevel === v.level ? 'active-s' : ''}`}
+                            >
+                                {v.icon}
+                                {v.label}
+                                {i < structureViews.length - 1 && <span className="arrow">→</span>}
+                            </button>
+                        ))}
+                    </div>
+                )}
+
+                {viewMode === 'processes' && (
+                    <div className="nav-levels">
+                        {processViews.map((v, i) => (
+                            <button
+                                key={v.level}
+                                onClick={() => setProcessLevel(v.level)}
+                                className={`level-btn ${processLevel === v.level ? 'active-p' : ''}`}
+                            >
+                                {v.icon}
+                                {v.label}
+                                {i < processViews.length - 1 && <span className="arrow">→</span>}
+                            </button>
+                        ))}
+                    </div>
+                )}
 
                 <div className="bottom-bar">
                     <div className="prof-info">

@@ -169,19 +169,23 @@ export function CellDivisionSimulator() {
                     background: rgba(68,136,255,0.2);
                 }
                 .cell-sim .timeline {
-                    margin-top: 0.6rem;
+                    position: absolute;
+                    bottom: 5rem;
+                    left: 50%;
+                    transform: translateX(-50%);
                     display: flex;
                     justify-content: center;
                     pointer-events: auto;
+                    width: 90%;
+                    max-width: 40rem;
                 }
                 .cell-sim .timeline-box {
                     background: rgba(15,15,25,0.9);
                     backdrop-filter: blur(10px);
                     border: 1px solid rgba(255,255,255,0.1);
                     border-radius: 0.6rem;
-                    padding: 0.6rem 0.8rem;
-                    max-width: 95%;
-                    width: 50rem;
+                    padding: 0.5rem 0.6rem;
+                    width: 100%;
                 }
                 .cell-sim .progress-bar {
                     height: 0.2rem;
@@ -219,14 +223,14 @@ export function CellDivisionSimulator() {
                 }
                 .cell-sim .bottom-bar {
                     position: absolute;
-                    bottom: 0.75rem;
-                    left: 0.75rem;
-                    right: 0.75rem;
+                    bottom: 0.5rem;
+                    left: 0.5rem;
+                    right: 0.5rem;
                     display: flex;
                     justify-content: space-between;
                     align-items: flex-end;
                     pointer-events: auto;
-                    gap: 0.5rem;
+                    gap: 0.4rem;
                     flex-wrap: wrap;
                 }
                 .cell-sim .panel {
