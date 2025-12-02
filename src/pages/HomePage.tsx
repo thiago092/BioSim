@@ -1,4 +1,4 @@
-import { Microscope, Dna, Sparkles, Search } from 'lucide-react'
+import { Microscope, Dna, Sparkles, Search, Globe } from 'lucide-react'
 import { SimulatorCard } from '../shared/components/SimulatorCard'
 
 export function HomePage() {
@@ -97,7 +97,7 @@ export function HomePage() {
                         fontWeight: '400',
                         lineHeight: '1.6',
                     }}>
-                        Explore a biologia através de simulações interativas em 3D
+                        Explore ciências através de simulações interativas em 3D
                     </p>
 
                     <p style={{
@@ -143,8 +143,16 @@ export function HomePage() {
                         description="Navegue pela estrutura do DNA em múltiplos níveis de zoom. Visualize replicação, transcrição e tradução em animações 3D detalhadas."
                         icon={Search}
                         path="/dna"
-                        isNew={true}
                         gradient="linear-gradient(135deg, #22c55e 0%, #059669 100%)"
+                    />
+
+                    <SimulatorCard
+                        title="Sistema Solar"
+                        description="Viaje pelo Sistema Solar! Veja os 8 planetas orbitando o Sol, explore dados de cada planeta e aprenda sobre astronomia."
+                        icon={Globe}
+                        path="/solar-system"
+                        isNew={true}
+                        gradient="linear-gradient(135deg, #fdb813 0%, #ff6b00 100%)"
                     />
                 </div>
 
@@ -222,6 +230,25 @@ export function HomePage() {
                                 <li>Transcrição (DNA → RNA)</li>
                                 <li>Tradução (RNA → Proteína)</li>
                                 <li>Animações detalhadas</li>
+                            </ul>
+                        </div>
+
+                        {/* Sistema Solar */}
+                        <div style={{
+                            background: 'linear-gradient(135deg, rgba(253, 184, 19, 0.1), rgba(255, 107, 0, 0.05))',
+                            border: '1px solid rgba(253, 184, 19, 0.2)',
+                            borderRadius: '16px',
+                            padding: '24px',
+                        }}>
+                            <h3 style={{ color: '#fdb813', fontSize: '1.1rem', fontWeight: '700', marginTop: 0, marginBottom: '16px' }}>
+                                🌌 Sistema Solar
+                            </h3>
+                            <ul style={{ margin: 0, padding: '0 0 0 20px', color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem', lineHeight: '1.8' }}>
+                                <li>8 planetas em órbita 3D</li>
+                                <li>Dados reais de cada planeta</li>
+                                <li>Anéis de Saturno</li>
+                                <li>Cinturão de asteroides</li>
+                                <li>Controle de velocidade orbital</li>
                             </ul>
                         </div>
                     </div>
