@@ -9,13 +9,11 @@ import { getPhasesForMode, MODE_NAMES } from '../../types'
 import { Play, Pause, RotateCcw, SkipForward, SkipBack, ChevronDown, Home, HelpCircle, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
-// Glossário de termos
 const glossary = [
-    { term: 'Cromossomo', def: 'Estrutura de DNA e proteínas com informação genética.' },
-    { term: 'Centríolo', def: 'Organiza as fibras do fuso durante a divisão.' },
-    { term: 'Citocinese', def: 'Divisão do citoplasma formando duas células.' },
-    { term: 'Fuso Mitótico', def: 'Fibras que separam os cromossomos.' },
-    { term: 'Cromatina', def: 'DNA + proteínas que formam cromossomos.' },
+    { term: 'Cromossomo', def: 'Estrutura de DNA e proteínas.' },
+    { term: 'Centríolo', def: 'Organiza fibras do fuso.' },
+    { term: 'Citocinese', def: 'Divisão do citoplasma.' },
+    { term: 'Fuso Mitótico', def: 'Fibras que separam cromossomos.' },
 ]
 
 export function CellDivisionSimulator() {
@@ -43,42 +41,339 @@ export function CellDivisionSimulator() {
     useEffect(() => {
         if (!isPlaying) return
         const interval = setInterval(() => {
-            const currentIdx = phases.indexOf(phase)
-            const isLastPhase = currentIdx === phases.length - 1
-            if (isLastPhase) {
+            const idx = phases.indexOf(phase)
+            if (idx === phases.length - 1) {
                 setPhase(phases[0])
-                if (generation < 10) setTimeout(() => setGeneration(prev => prev + 1), speed / 2)
+                if (generation < 10) setTimeout(() => setGeneration(g => g + 1), speed / 2)
             } else {
-                setPhase(phases[currentIdx + 1])
+                setPhase(phases[idx + 1])
             }
         }, speed)
         return () => clearInterval(interval)
     }, [isPlaying, speed, phase, phases, generation])
 
-    const handleModeChange = (newMode: ModeLevel) => {
-        setMode(newMode)
-        setPhase(getPhasesForMode(newMode)[0])
+    const handleModeChange = (m: ModeLevel) => {
+        setMode(m)
+        setPhase(getPhasesForMode(m)[0])
         setGeneration(0)
         setShowModeMenu(false)
     }
 
-    const nextPhase = () => setPhase(phases[(currentIndex + 1) % phases.length])
-    const prevPhase = () => setPhase(phases[(currentIndex - 1 + phases.length) % phases.length])
-    const reset = () => { setPhase(phases[0]); setIsPlaying(false); setGeneration(0) }
-
-    const phaseDescriptions: Partial<Record<Phase, string>> = {
-        'Intérfase': 'A célula cresce e duplica seu DNA.',
+    const descriptions: Partial<Record<Phase, string>> = {
+        'Intérfase': 'Célula cresce e duplica DNA.',
         'Prófase': 'Cromossomos condensam.',
-        'Metáfase': 'Cromossomos alinham-se no centro.',
-        'Anáfase': 'Cromátides são separadas.',
+        'Metáfase': 'Alinhamento no centro.',
+        'Anáfase': 'Separação das cromátides.',
         'Telófase': 'Núcleos se formam.',
-        'Citocinese': 'Citoplasma se divide.',
+        'Citocinese': 'Divisão do citoplasma.',
         'Células-Filhas': 'Divisão completa!',
     }
 
     return (
-        <div style={{ width: '100vw', height: '100vh', background: '#050510', overflow: 'hidden' }}>
-            {/* 3D Canvas */}
+        <div className="cell-sim">
+            <style>{`
+                .cell-sim {
+                    width: 100vw;
+                    height: 100vh;
+                    background: #050510;
+                    overflow: hidden;
+                    position: relative;
+                }
+                .cell-sim .ui-overlay {
+                    position: fixed;
+                    inset: 0;
+                    pointer-events: none;
+                    padding: 0.75rem;
+                    display: flex;
+                    flex-direction: column;
+                }
+                .cell-sim .top-bar {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    pointer-events: auto;
+                    flex-wrap: wrap;
+                    gap: 0.5rem;
+                }
+                .cell-sim .icon-btn {
+                    background: rgba(20,20,30,0.9);
+                    border: 1px solid rgba(255,255,255,0.15);
+                    border-radius: 0.5rem;
+                    padding: 0.5rem;
+                    color: white;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    text-decoration: none;
+                    transition: all 0.2s;
+                }
+                .cell-sim .icon-btn:hover {
+                    background: rgba(68,136,255,0.3);
+                    border-color: rgba(68,136,255,0.5);
+                }
+                .cell-sim .left-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.6rem;
+                    color: white;
+                }
+                .cell-sim .title {
+                    font-size: 1rem;
+                    font-weight: 700;
+                }
+                .cell-sim .subtitle {
+                    font-size: 0.6rem;
+                    opacity: 0.5;
+                }
+                .cell-sim .dropdown {
+                    position: relative;
+                }
+                .cell-sim .dropdown-btn {
+                    background: rgba(20,20,30,0.9);
+                    border: 1px solid rgba(68,136,255,0.3);
+                    border-radius: 0.5rem;
+                    padding: 0.4rem 0.75rem;
+                    color: white;
+                    font-size: 0.75rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.4rem;
+                }
+                .cell-sim .dropdown-menu {
+                    position: absolute;
+                    top: 100%;
+                    right: 0;
+                    margin-top: 0.4rem;
+                    background: rgba(20,20,30,0.98);
+                    border: 1px solid rgba(255,255,255,0.15);
+                    border-radius: 0.5rem;
+                    overflow: hidden;
+                    min-width: 10rem;
+                    z-index: 50;
+                }
+                .cell-sim .dropdown-item {
+                    width: 100%;
+                    padding: 0.6rem 0.8rem;
+                    border: none;
+                    border-bottom: 1px solid rgba(255,255,255,0.05);
+                    color: white;
+                    font-size: 0.75rem;
+                    cursor: pointer;
+                    text-align: left;
+                    background: transparent;
+                }
+                .cell-sim .dropdown-item:hover, .cell-sim .dropdown-item.active {
+                    background: rgba(68,136,255,0.2);
+                }
+                .cell-sim .timeline {
+                    margin-top: 0.6rem;
+                    display: flex;
+                    justify-content: center;
+                    pointer-events: auto;
+                }
+                .cell-sim .timeline-box {
+                    background: rgba(15,15,25,0.9);
+                    backdrop-filter: blur(10px);
+                    border: 1px solid rgba(255,255,255,0.1);
+                    border-radius: 0.6rem;
+                    padding: 0.6rem 0.8rem;
+                    max-width: 95%;
+                    width: 50rem;
+                }
+                .cell-sim .progress-bar {
+                    height: 0.2rem;
+                    background: rgba(255,255,255,0.1);
+                    border-radius: 0.1rem;
+                    margin-bottom: 0.5rem;
+                    overflow: hidden;
+                }
+                .cell-sim .progress-fill {
+                    height: 100%;
+                    background: linear-gradient(90deg, #4488ff, #00ffff);
+                    transition: width 0.3s;
+                    border-radius: 0.1rem;
+                }
+                .cell-sim .phase-btns {
+                    display: flex;
+                    gap: 0.25rem;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                }
+                .cell-sim .phase-btn {
+                    padding: 0.25rem 0.5rem;
+                    font-size: 0.55rem;
+                    background: rgba(255,255,255,0.05);
+                    border: 1px solid rgba(255,255,255,0.1);
+                    border-radius: 0.25rem;
+                    color: white;
+                    cursor: pointer;
+                    white-space: nowrap;
+                }
+                .cell-sim .phase-btn.active {
+                    background: linear-gradient(135deg, #4488ff, #00c8ff);
+                    border-color: rgba(68,136,255,0.5);
+                    font-weight: 700;
+                }
+                .cell-sim .bottom-bar {
+                    position: absolute;
+                    bottom: 0.75rem;
+                    left: 0.75rem;
+                    right: 0.75rem;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-end;
+                    pointer-events: auto;
+                    gap: 0.5rem;
+                    flex-wrap: wrap;
+                }
+                .cell-sim .panel {
+                    background: rgba(15,15,25,0.95);
+                    backdrop-filter: blur(10px);
+                    border: 1px solid rgba(68,136,255,0.3);
+                    border-radius: 0.6rem;
+                    padding: 0.75rem;
+                    color: white;
+                }
+                .cell-sim .ctrl-row {
+                    display: flex;
+                    gap: 0.4rem;
+                    margin-bottom: 0.5rem;
+                }
+                .cell-sim .ctrl-btn {
+                    background: rgba(255,255,255,0.1);
+                    border: 1px solid rgba(255,255,255,0.2);
+                    border-radius: 0.4rem;
+                    padding: 0.5rem;
+                    color: white;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .cell-sim .ctrl-btn:hover {
+                    background: rgba(255,255,255,0.2);
+                }
+                .cell-sim .play-btn {
+                    width: 2.5rem;
+                }
+                .cell-sim .play-btn.playing { background: #ef4444; }
+                .cell-sim .play-btn.paused { background: #22c55e; }
+                .cell-sim .speed-row {
+                    display: flex;
+                    gap: 0.2rem;
+                    background: rgba(0,0,0,0.3);
+                    border-radius: 0.25rem;
+                    padding: 0.15rem;
+                }
+                .cell-sim .speed-btn {
+                    flex: 1;
+                    padding: 0.25rem;
+                    background: transparent;
+                    border: none;
+                    border-radius: 0.2rem;
+                    font-size: 0.75rem;
+                    cursor: pointer;
+                }
+                .cell-sim .speed-btn.active {
+                    background: rgba(68,136,255,0.3);
+                }
+                .cell-sim .stats {
+                    margin-top: 0.5rem;
+                    text-align: center;
+                    font-size: 0.65rem;
+                    color: rgba(255,255,255,0.7);
+                }
+                .cell-sim .tip {
+                    color: rgba(255,255,255,0.3);
+                    font-size: 0.6rem;
+                    text-align: center;
+                    flex: 1;
+                    pointer-events: none;
+                    min-width: 8rem;
+                }
+                .cell-sim .phase-info {
+                    max-width: 12rem;
+                    background: rgba(10,10,25,0.95);
+                    border-color: rgba(157,78,221,0.4);
+                }
+                .cell-sim .phase-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    margin-bottom: 0.4rem;
+                }
+                .cell-sim .phase-icon { font-size: 1rem; }
+                .cell-sim .phase-label {
+                    font-size: 0.5rem;
+                    opacity: 0.5;
+                    text-transform: uppercase;
+                }
+                .cell-sim .phase-name {
+                    font-size: 0.8rem;
+                    font-weight: 700;
+                    color: #c77dff;
+                }
+                .cell-sim .phase-desc {
+                    font-size: 0.65rem;
+                    line-height: 1.4;
+                    opacity: 0.85;
+                }
+                .cell-sim .modal-overlay {
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(0,0,0,0.8);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 100;
+                    padding: 1rem;
+                }
+                .cell-sim .modal {
+                    background: rgba(20,20,30,0.98);
+                    border-radius: 0.75rem;
+                    padding: 1.25rem;
+                    max-width: 22rem;
+                    width: 100%;
+                    max-height: 80vh;
+                    overflow: auto;
+                    border: 1px solid rgba(255,255,255,0.1);
+                }
+                .cell-sim .modal-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 1rem;
+                }
+                .cell-sim .modal-title {
+                    margin: 0;
+                    color: white;
+                    font-size: 1rem;
+                }
+                .cell-sim .glossary-item {
+                    margin-bottom: 0.75rem;
+                    padding-bottom: 0.75rem;
+                    border-bottom: 1px solid rgba(255,255,255,0.05);
+                }
+                .cell-sim .glossary-term {
+                    color: #4488ff;
+                    font-weight: 600;
+                    font-size: 0.8rem;
+                }
+                .cell-sim .glossary-def {
+                    color: rgba(255,255,255,0.7);
+                    font-size: 0.7rem;
+                    margin-top: 0.15rem;
+                }
+                @media (max-width: 600px) {
+                    .cell-sim .tip { display: none; }
+                    .cell-sim .phase-info { max-width: 10rem; }
+                    .cell-sim .bottom-bar { justify-content: center; }
+                }
+            `}</style>
+
             <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
                 <color attach="background" args={['#050510']} />
                 <Suspense fallback={null}>
@@ -86,38 +381,27 @@ export function CellDivisionSimulator() {
                     <Stars radius={100} depth={50} count={2000} factor={3} fade speed={1} />
                     <Scene phase={phase} mode={mode} generation={generation} isContinuousMode={generation > 0} isPlaying={isPlaying} />
                     <OrbitControls makeDefault enablePan={false} minDistance={4} maxDistance={15} />
-                    <EffectComposer>
-                        <Bloom luminanceThreshold={0.3} intensity={0.3} />
-                    </EffectComposer>
+                    <EffectComposer><Bloom luminanceThreshold={0.3} intensity={0.3} /></EffectComposer>
                 </Suspense>
             </Canvas>
 
-            {/* UI OVERLAY - Fixed positioning */}
-            <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', padding: '12px' }}>
-                
-                {/* TOP BAR */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', pointerEvents: 'auto' }}>
-                    {/* Left: Home + Title */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <Link to="/" style={iconBtnStyle}><Home size={18} /></Link>
-                        <div style={{ color: 'white' }}>
-                            <div style={{ fontSize: '1.1rem', fontWeight: '700' }}>🔬 Divisão Celular</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.5 }}>Prof. Anayram</div>
+            <div className="ui-overlay">
+                <div className="top-bar">
+                    <div className="left-header">
+                        <Link to="/" className="icon-btn"><Home size={16} /></Link>
+                        <div>
+                            <div className="title">🔬 Divisão Celular</div>
+                            <div className="subtitle">Prof. Anayram</div>
                         </div>
                     </div>
-
-                    {/* Right: Mode Selector */}
-                    <div style={{ position: 'relative' }}>
-                        <button onClick={() => setShowModeMenu(!showModeMenu)} style={dropdownBtnStyle}>
-                            📚 {MODE_NAMES[mode]} <ChevronDown size={14} />
+                    <div className="dropdown">
+                        <button className="dropdown-btn" onClick={() => setShowModeMenu(!showModeMenu)}>
+                            📚 {MODE_NAMES[mode]} <ChevronDown size={12} />
                         </button>
                         {showModeMenu && (
-                            <div style={dropdownMenuStyle}>
+                            <div className="dropdown-menu">
                                 {(['basic', 'intermediate', 'advanced'] as ModeLevel[]).map(m => (
-                                    <button key={m} onClick={() => handleModeChange(m)} style={{
-                                        ...dropdownItemStyle,
-                                        background: mode === m ? 'rgba(68,136,255,0.2)' : 'transparent'
-                                    }}>
+                                    <button key={m} className={`dropdown-item ${mode === m ? 'active' : ''}`} onClick={() => handleModeChange(m)}>
                                         {mode === m && '✓ '}{MODE_NAMES[m]}
                                     </button>
                                 ))}
@@ -126,40 +410,14 @@ export function CellDivisionSimulator() {
                     </div>
                 </div>
 
-                {/* PHASE TIMELINE - Top Center */}
-                <div style={{ 
-                    marginTop: '10px',
-                    display: 'flex', 
-                    justifyContent: 'center',
-                    pointerEvents: 'auto'
-                }}>
-                    <div style={timelineStyle}>
-                        <div style={{ 
-                            height: '3px', 
-                            background: 'rgba(255,255,255,0.1)', 
-                            borderRadius: '2px',
-                            marginBottom: '8px',
-                            overflow: 'hidden'
-                        }}>
-                            <div style={{ 
-                                height: '100%', 
-                                width: `${((currentIndex + 1) / phases.length) * 100}%`,
-                                background: 'linear-gradient(90deg, #4488ff, #00ffff)',
-                                transition: 'width 0.3s'
-                            }} />
+                <div className="timeline">
+                    <div className="timeline-box">
+                        <div className="progress-bar">
+                            <div className="progress-fill" style={{ width: `${((currentIndex + 1) / phases.length) * 100}%` }} />
                         </div>
-                        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                        <div className="phase-btns">
                             {phases.map((p, i) => (
-                                <button key={p} onClick={() => setPhase(p)} style={{
-                                    padding: '4px 8px',
-                                    fontSize: '0.6rem',
-                                    background: phase === p ? 'linear-gradient(135deg, #4488ff, #00c8ff)' : 'rgba(255,255,255,0.05)',
-                                    border: '1px solid ' + (phase === p ? 'rgba(68,136,255,0.5)' : 'rgba(255,255,255,0.1)'),
-                                    borderRadius: '4px',
-                                    color: 'white',
-                                    cursor: 'pointer',
-                                    fontWeight: phase === p ? '700' : '400'
-                                }}>
+                                <button key={p} className={`phase-btn ${phase === p ? 'active' : ''}`} onClick={() => setPhase(p)}>
                                     {i < currentIndex && '✓ '}{p}
                                 </button>
                             ))}
@@ -167,198 +425,66 @@ export function CellDivisionSimulator() {
                     </div>
                 </div>
 
-                {/* BOTTOM BAR */}
-                <div style={{ 
-                    position: 'absolute', 
-                    bottom: '12px', 
-                    left: '12px', 
-                    right: '12px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-end',
-                    pointerEvents: 'auto'
-                }}>
-                    {/* Left: Controls */}
-                    <div style={panelStyle}>
-                        <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
-                            <button onClick={prevPhase} style={ctrlBtnStyle}><SkipBack size={16} /></button>
-                            <button onClick={() => setIsPlaying(!isPlaying)} style={{
-                                ...ctrlBtnStyle,
-                                background: isPlaying ? '#ef4444' : '#22c55e',
-                                width: '40px'
-                            }}>
-                                {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+                <div className="bottom-bar">
+                    <div className="panel">
+                        <div className="ctrl-row">
+                            <button className="ctrl-btn" onClick={() => setPhase(phases[(currentIndex - 1 + phases.length) % phases.length])}><SkipBack size={14} /></button>
+                            <button className={`ctrl-btn play-btn ${isPlaying ? 'playing' : 'paused'}`} onClick={() => setIsPlaying(!isPlaying)}>
+                                {isPlaying ? <Pause size={14} /> : <Play size={14} />}
                             </button>
-                            <button onClick={nextPhase} style={ctrlBtnStyle}><SkipForward size={16} /></button>
-                            <button onClick={reset} style={ctrlBtnStyle}><RotateCcw size={14} /></button>
+                            <button className="ctrl-btn" onClick={() => setPhase(phases[(currentIndex + 1) % phases.length])}><SkipForward size={14} /></button>
+                            <button className="ctrl-btn" onClick={() => { setPhase(phases[0]); setIsPlaying(false); setGeneration(0) }}><RotateCcw size={12} /></button>
                         </div>
-                        <div style={{ display: 'flex', gap: '3px', background: 'rgba(0,0,0,0.3)', borderRadius: '4px', padding: '2px' }}>
+                        <div className="speed-row">
                             {[{ l: '🐢', v: 3000 }, { l: '🚶', v: 2000 }, { l: '🏃', v: 1000 }].map(s => (
-                                <button key={s.v} onClick={() => setSpeed(s.v)} style={{
-                                    flex: 1,
-                                    padding: '4px',
-                                    background: speed === s.v ? 'rgba(68,136,255,0.3)' : 'transparent',
-                                    border: 'none',
-                                    borderRadius: '3px',
-                                    fontSize: '0.8rem',
-                                    cursor: 'pointer'
-                                }}>{s.l}</button>
+                                <button key={s.v} className={`speed-btn ${speed === s.v ? 'active' : ''}`} onClick={() => setSpeed(s.v)}>{s.l}</button>
                             ))}
                         </div>
                         {generation > 0 && (
-                            <div style={{ marginTop: '8px', textAlign: 'center', fontSize: '0.7rem', color: 'rgba(255,255,255,0.7)' }}>
+                            <div className="stats">
                                 Gen: <b style={{ color: '#667eea' }}>{generation}</b> | Células: <b style={{ color: '#764ba2' }}>{totalCells}</b>
                             </div>
                         )}
                     </div>
 
-                    {/* Center: Tip */}
-                    <div style={{ 
-                        color: 'rgba(255,255,255,0.3)', 
-                        fontSize: '0.65rem',
-                        textAlign: 'center',
-                        flex: 1,
-                        pointerEvents: 'none'
-                    }}>
-                        💡 Arraste para girar • Scroll para zoom
-                    </div>
+                    <div className="tip">💡 Arraste para girar • Scroll para zoom</div>
 
-                    {/* Right: Phase Info + Help */}
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
-                        <div style={{ ...panelStyle, maxWidth: '200px', background: 'rgba(10,10,25,0.95)', borderColor: 'rgba(157,78,221,0.4)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                                <span style={{ fontSize: '1.2rem' }}>📖</span>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
+                        <div className="panel phase-info">
+                            <div className="phase-header">
+                                <span className="phase-icon">📖</span>
                                 <div>
-                                    <div style={{ fontSize: '0.55rem', opacity: 0.5, textTransform: 'uppercase' }}>Fase</div>
-                                    <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#c77dff' }}>{phase}</div>
+                                    <div className="phase-label">Fase</div>
+                                    <div className="phase-name">{phase}</div>
                                 </div>
                             </div>
-                            <div style={{ fontSize: '0.7rem', lineHeight: 1.4, opacity: 0.85 }}>
-                                {phaseDescriptions[phase] || 'Observe as mudanças.'}
-                            </div>
+                            <div className="phase-desc">{descriptions[phase] || 'Observe.'}</div>
                         </div>
-                        <button onClick={() => setShowHelp(true)} style={{ ...iconBtnStyle, background: 'rgba(68,136,255,0.2)' }}>
-                            <HelpCircle size={18} />
+                        <button className="icon-btn" onClick={() => setShowHelp(true)} style={{ background: 'rgba(68,136,255,0.2)' }}>
+                            <HelpCircle size={16} />
                         </button>
                     </div>
                 </div>
             </div>
 
-            {/* HELP MODAL */}
             {showHelp && (
-                <div style={{ 
-                    position: 'fixed', 
-                    inset: 0, 
-                    background: 'rgba(0,0,0,0.8)', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    zIndex: 100,
-                    padding: '20px'
-                }}>
-                    <div style={{ 
-                        background: 'rgba(20,20,30,0.98)', 
-                        borderRadius: '12px', 
-                        padding: '20px',
-                        maxWidth: '400px',
-                        width: '100%',
-                        maxHeight: '80vh',
-                        overflow: 'auto',
-                        border: '1px solid rgba(255,255,255,0.1)'
-                    }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                            <h3 style={{ margin: 0, color: 'white', fontSize: '1.1rem' }}>📚 Glossário</h3>
-                            <button onClick={() => setShowHelp(false)} style={iconBtnStyle}><X size={18} /></button>
+                <div className="modal-overlay" onClick={() => setShowHelp(false)}>
+                    <div className="modal" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3 className="modal-title">📚 Glossário</h3>
+                            <button className="icon-btn" onClick={() => setShowHelp(false)}><X size={16} /></button>
                         </div>
                         {glossary.map((g, i) => (
-                            <div key={i} style={{ marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                <div style={{ color: '#4488ff', fontWeight: '600', fontSize: '0.85rem' }}>{g.term}</div>
-                                <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.75rem', marginTop: '2px' }}>{g.def}</div>
+                            <div key={i} className="glossary-item">
+                                <div className="glossary-term">{g.term}</div>
+                                <div className="glossary-def">{g.def}</div>
                             </div>
                         ))}
                     </div>
                 </div>
             )}
 
-            {/* Generation Modal */}
             {showExplanation && <GenerationExplanation generation={generation} onClose={() => setShowExplanation(false)} />}
         </div>
     )
-}
-
-// Styles
-const iconBtnStyle: React.CSSProperties = {
-    background: 'rgba(20,20,30,0.9)',
-    border: '1px solid rgba(255,255,255,0.15)',
-    borderRadius: '8px',
-    padding: '8px',
-    color: 'white',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textDecoration: 'none'
-}
-
-const dropdownBtnStyle: React.CSSProperties = {
-    ...iconBtnStyle,
-    padding: '8px 12px',
-    gap: '6px',
-    fontSize: '0.8rem',
-    fontWeight: '600'
-}
-
-const dropdownMenuStyle: React.CSSProperties = {
-    position: 'absolute',
-    top: '100%',
-    right: 0,
-    marginTop: '6px',
-    background: 'rgba(20,20,30,0.98)',
-    border: '1px solid rgba(255,255,255,0.15)',
-    borderRadius: '8px',
-    overflow: 'hidden',
-    minWidth: '180px',
-    zIndex: 50
-}
-
-const dropdownItemStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '10px 14px',
-    border: 'none',
-    borderBottom: '1px solid rgba(255,255,255,0.05)',
-    color: 'white',
-    fontSize: '0.8rem',
-    cursor: 'pointer',
-    textAlign: 'left'
-}
-
-const timelineStyle: React.CSSProperties = {
-    background: 'rgba(15,15,25,0.9)',
-    backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(255,255,255,0.1)',
-    borderRadius: '10px',
-    padding: '10px 14px',
-    maxWidth: '90%',
-    width: '700px'
-}
-
-const panelStyle: React.CSSProperties = {
-    background: 'rgba(15,15,25,0.95)',
-    backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(68,136,255,0.3)',
-    borderRadius: '10px',
-    padding: '12px',
-    color: 'white'
-}
-
-const ctrlBtnStyle: React.CSSProperties = {
-    background: 'rgba(255,255,255,0.1)',
-    border: '1px solid rgba(255,255,255,0.2)',
-    borderRadius: '6px',
-    padding: '8px',
-    color: 'white',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
 }

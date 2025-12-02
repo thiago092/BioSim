@@ -5,6 +5,27 @@
   color-scheme: dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #000000;
+  
+  /* Responsive font size base */
+  font-size: 16px;
+}
+
+/* Scale down for smaller screens */
+@media (max-width: 1400px) {
+  :root { font-size: 14px; }
+}
+@media (max-width: 1200px) {
+  :root { font-size: 13px; }
+}
+@media (max-width: 900px) {
+  :root { font-size: 12px; }
+}
+@media (max-width: 600px) {
+  :root { font-size: 11px; }
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
@@ -18,4 +39,21 @@ body {
 #root {
   width: 100%;
   height: 100%;
+}
+
+/* Utility classes for responsive design */
+.hide-mobile {
+  display: block;
+}
+.show-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+  .show-mobile {
+    display: block !important;
+  }
 }
